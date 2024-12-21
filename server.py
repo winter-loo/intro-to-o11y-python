@@ -23,8 +23,8 @@ def fibHandler():
     i = int(request.args.get('index'))
 
     # CUSTOM ATTRIBUTE: Add a custom attribute for the index here. 2 lines to uncomment
-    # current_span = trace.get_current_span()
-    # current_span.set_attribute("parameter.index", i)
+    current_span = trace.get_current_span()
+    current_span.set_attribute("parameter.index", i)
 
     returnValue = 0
     if i == 0:
@@ -40,12 +40,12 @@ def fibHandler():
         respTwo = requests.get(
             'http://127.0.0.1:5000/fib', minusTwoPayload)
 
-    # CUSTOM SPAN: Put this calculation into its own span.
-    # 3 lines to uncomment, and add some indent to the one surrounded
-     #   tracer = trace.get_tracer(__name__)
-     #   with tracer.start_as_current_span("calculate") as span:
-        returnValue = int(respOne.content) + int(respTwo.content)
-     #     span.set_attribute("result", returnValue)
+        # CUSTOM SPAN: Put this calculation into its own span.
+        # 3 lines to uncomment, and add some indent to the one surrounded
+        tracer = trace.get_tracer(__name__)
+        with tracer.start_as_current_span("calculate") as span:
+          returnValue = int(respOne.content) + int(respTwo.content)
+          span.set_attribute("result", returnValue)
 
     return str(returnValue)
 
